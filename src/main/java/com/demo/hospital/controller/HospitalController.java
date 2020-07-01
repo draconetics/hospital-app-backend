@@ -1,18 +1,30 @@
 package com.demo.hospital.controller;
 
+
+import com.demo.hospital.dao.HospitalCommand;
 import com.demo.hospital.model.HospitalEntity;
 import com.demo.hospital.model.nullObject.NullHospitalEntity;
 import com.demo.hospital.repository.HospitalRepository;
 import com.demo.hospital.service.HospitalService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -41,9 +53,9 @@ public class HospitalController {
     }
 
     @PostMapping("/hospitals")
-    public ResponseEntity<HospitalEntity> saveHospital(@RequestBody HospitalEntity hospitalData){
+    public ResponseEntity<HospitalEntity> saveHospital(@RequestBody HospitalCommand hospitalData) throws ParseException {
         System.out.println("this is a hospital -" + hospitalData.getName());
-        HospitalEntity updated = hospitalService.saveHospital(hospitalData);
+        HospitalEntity updated = hospitalService.saveHospital(hospitalData.convertToHospitalEntity());
         return new ResponseEntity<HospitalEntity>(updated, new HttpHeaders(), HttpStatus.OK);
     }
 
@@ -72,9 +84,28 @@ public class HospitalController {
     }
 
     @GetMapping("/hospitals/search")
-    public ResponseEntity<List<HospitalEntity>> searchForHospitals(@RequestParam String hospital) {
-        System.out.println(hospital);
-        return new ResponseEntity<>(hospitalRepository.findAll(SearchHospital), HttpStatus.OK);
-        return null;
+    public ResponseEntity<List<HospitalEntity>> searchForHospitals(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false)
+            @DateTimeFormat(pattern = "MM/dd/yyyy") Date fundation) {
+        System.out.println(name);
+        System.out.println(fundation);
+        List<HospitalEntity> searching = hospitalRepository.findAll(new Specification<HospitalEntity>() {
+            @Override
+            public Predicate toPredicate(Root<HospitalEntity> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
+                Predicate p = cb.conjunction();
+                if(Objects.nonNull(fundation)){
+                    p = cb.and(p, cb.equal(root.<Date>get("createdAt"), fundation));
+
+                }
+                if(!StringUtils.isEmpty(name)){
+                    p = cb.and(p, cb.like(root.get("name"),"%"+ name +"%"));
+                }
+                cq.orderBy(cb.desc(root.get("name")));
+                return p;
+            }
+        });
+        return new ResponseEntity<>(searching, HttpStatus.OK);
+        //return null;
     }
 }
