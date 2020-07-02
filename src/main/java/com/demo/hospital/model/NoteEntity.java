@@ -18,7 +18,6 @@ public class NoteEntity extends ModelBase{
     private Date dateOfEmition;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    //@JoinColumn(name = "post_id", nullable = false)
     @JoinColumn(nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore

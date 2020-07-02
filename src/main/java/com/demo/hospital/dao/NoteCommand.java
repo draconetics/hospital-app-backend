@@ -13,7 +13,7 @@ public class NoteCommand extends ModelBase {
     private Date dateOfEmition;
     private Long patientId;
 
-    NoteCommand(){}
+    public NoteCommand(){}
 
     public String getDescription() {
         return description;

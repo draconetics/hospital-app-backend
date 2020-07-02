@@ -1,29 +1,23 @@
 package com.demo.hospital.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.demo.hospital.repository.DoctorRepository;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "patients")
-public class PatientEntity extends ModelBase {
+@Table(name = "doctors")
+public class DoctorEntity extends ModelBase {
 
     private String name;
     private String lastName;
-    @JsonFormat(pattern="yyyy-MM-dd")
     private Date bornDate;
-    private String direction;
+    private String address;
+    @ManyToOne
+    private HospitalEntity hospital;
 
-/*    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonIgnore
-    private HospitalEntity patient;*/
-
+    public DoctorEntity(){}
 
     public String getName() {
         return name;
@@ -49,11 +43,19 @@ public class PatientEntity extends ModelBase {
         this.bornDate = bornDate;
     }
 
-    public String getDirection() {
-        return direction;
+    public String getAddress() {
+        return address;
     }
 
-    public void setDirection(String direction) {
-        this.direction = direction;
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public HospitalEntity getHospital() {
+        return hospital;
+    }
+
+    public void setHospital(HospitalEntity hospital) {
+        this.hospital = hospital;
     }
 }

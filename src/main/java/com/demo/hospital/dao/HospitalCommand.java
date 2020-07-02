@@ -13,6 +13,19 @@ public class HospitalCommand extends ModelBase {
     private String address;
     private String createdAt;
 
+    public HospitalCommand(){}
+
+    public HospitalCommand(HospitalEntity hospital){
+        setId(hospital.getId());
+        setCreatedDate(hospital.getCreatedDate());
+        setLastModifiedDate(hospital.getLastModifiedDate());
+        setVersion(hospital.getVersion());
+
+        setName(hospital.getName());
+        setAddress(hospital.getAddress());
+        setCreatedAt(new SimpleDateFormat("MM/dd/yyyy").format(hospital.getCreatedAt()));
+    }
+
     public String getName() {
         return name;
     }
