@@ -2,6 +2,7 @@ package com.demo.hospital.service;
 
 import com.demo.hospital.model.DoctorEntity;
 import com.demo.hospital.model.nullObject.NullDoctorEntity;
+import com.demo.hospital.model.nullObject.NullHospitalEntity;
 import com.demo.hospital.repository.DoctorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class DoctorService {
         }
     }
 
-    public DoctorEntity getHospitalById(long id)
+    public DoctorEntity getDoctorById(long id)
     {
         try{
             Optional<DoctorEntity> doctorFounded = doctorRepository.findById(id);
@@ -61,5 +62,25 @@ public class DoctorService {
             throw new Error(e);
         }
     }
+
+    public DoctorEntity updateDoctor(long id, DoctorEntity doctorData)
+    {
+        Optional<DoctorEntity> hospitalFounded = doctorRepository.findById(id);
+
+        if (hospitalFounded.isPresent()) {
+            DoctorEntity hospitalEntity = hospitalFounded.get();
+            hospitalEntity.setName(doctorData.getName());
+            hospitalEntity.setLastName(doctorData.getLastName());
+            hospitalEntity.setAddress(doctorData.getAddress());
+            hospitalEntity.setBornDate(doctorData.getBornDate());
+            hospitalEntity.setHospital(doctorData.getHospital());
+
+            return doctorRepository.save(hospitalEntity);
+        } else {
+            return new NullDoctorEntity();
+        }
+    }
+
+
 
 }

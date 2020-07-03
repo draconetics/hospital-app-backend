@@ -4,7 +4,9 @@ import com.demo.hospital.repository.DoctorRepository;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "doctors")
@@ -16,6 +18,9 @@ public class DoctorEntity extends ModelBase {
     private String address;
     @ManyToOne
     private HospitalEntity hospital;
+
+    @OneToMany(mappedBy = "doctor", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    private List<SpecialityEntity> specialityEntities;
 
     public DoctorEntity(){}
 
@@ -57,5 +62,13 @@ public class DoctorEntity extends ModelBase {
 
     public void setHospital(HospitalEntity hospital) {
         this.hospital = hospital;
+    }
+
+    public List<SpecialityEntity> getSpecialityEntities() {
+        return specialityEntities;
+    }
+
+    public void setSpecialityEntities(List<SpecialityEntity> specialityEntities) {
+        this.specialityEntities = specialityEntities;
     }
 }

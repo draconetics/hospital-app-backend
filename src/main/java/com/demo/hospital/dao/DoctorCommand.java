@@ -20,7 +20,7 @@ public class DoctorCommand extends ModelBase {
     public DoctorCommand(DoctorEntity doctor){
         setId(doctor.getId());
         setCreatedDate(doctor.getCreatedDate());
-        setLastName(doctor.getLastName());
+        setLastModifiedDate(doctor.getLastModifiedDate());
         setVersion(doctor.getVersion());
 
         setName(doctor.getName());

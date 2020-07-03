@@ -4,6 +4,7 @@ package com.demo.hospital.controller;
 import com.demo.hospital.dao.DoctorCommand;
 
 import com.demo.hospital.model.DoctorEntity;
+import com.demo.hospital.model.HospitalEntity;
 import com.demo.hospital.model.nullObject.NullDoctorEntity;
 import com.demo.hospital.service.DoctorService;
 import com.demo.hospital.service.HospitalService;
@@ -30,7 +31,7 @@ public class DoctorController {
     private HospitalService hospitalService;
 
     @GetMapping("/doctors")
-    public ResponseEntity<List<DoctorCommand>> getAllHospitals() {
+    public ResponseEntity<List<DoctorCommand>> getAllDoctors() {
 
         List<DoctorCommand> doctorList = new ArrayList<>();
         doctorService.getAllDoctors().forEach(doc -> {
@@ -41,8 +42,8 @@ public class DoctorController {
     }
 
     @GetMapping("/doctors/{id}")
-    public ResponseEntity<DoctorCommand> getHospitalById(@PathVariable("id") long id) {
-        DoctorEntity foundHospital = doctorService.getHospitalById(id);
+    public ResponseEntity<DoctorCommand> getDoctorById(@PathVariable("id") long id) {
+        DoctorEntity foundHospital = doctorService.getDoctorById(id);
         if(foundHospital instanceof NullDoctorEntity)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         else
@@ -50,21 +51,34 @@ public class DoctorController {
     }
 
     @PostMapping("/doctors")
-    public ResponseEntity<DoctorCommand> saveHospital(@RequestBody DoctorCommand doctorData) throws ParseException {
+    public ResponseEntity<DoctorCommand> saveDoctor(@RequestBody DoctorCommand doctorData) throws ParseException {
         DoctorEntity created = doctorData.convertToDoctorEntity();
         created.setHospital(hospitalService.getHospitalById(doctorData.getHospital()));
         doctorService.saveDoctor(created);
         return new ResponseEntity<DoctorCommand>(new DoctorCommand(created), new HttpHeaders(), HttpStatus.CREATED);
     }
 
-/*    @PutMapping("/doctors/{id}")
-    public ResponseEntity<DoctorCommand> updateHospital(@PathVariable("id") long id,
-                                                          @RequestBody HospitalCommand hospitalData) throws ParseException {
+    @PutMapping("/doctors/{id}")
+    public ResponseEntity<DoctorCommand> updateDoctor(  @PathVariable("id") long id,
+                                                        @RequestBody DoctorCommand doctorData) throws ParseException {
         //System.out.println("this is a post-" + patient.getId());
-        HospitalEntity updated = hospitalService.updateHospital(id,hospitalData.convertToHospitalEntity());
-        if(updated instanceof NullHospitalEntity)
+        DoctorEntity updated = doctorData.convertToDoctorEntity();
+        updated.setHospital(hospitalService.getHospitalById(doctorData.getHospital()));
+        updated = doctorService.updateDoctor(id,updated);
+        if(updated instanceof NullDoctorEntity)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         else
-            return new ResponseEntity<HospitalCommand>(new HospitalCommand(updated), new HttpHeaders(), HttpStatus.OK);
-    }*/
+            return new ResponseEntity<DoctorCommand>(new DoctorCommand(updated), new HttpHeaders(), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/doctors/{id}")
+    public ResponseEntity<String> deleteById(@PathVariable("id") long id) {
+        try {
+
+            doctorService.deleteDoctorById(id);
+            return new ResponseEntity<>("msg: deleted " + id, new HttpHeaders(), HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
+    }
 }
