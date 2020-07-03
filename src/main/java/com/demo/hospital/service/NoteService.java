@@ -35,15 +35,26 @@ public class NoteService {
         }
     }
 
-    public NoteEntity saveNote(NoteCommand noteCommand){
-        //PatientEntity newEntity = patient.get();
-        NoteEntity newEntity = noteCommand.convertToNoteEntity();
-        Optional<PatientEntity> patientById = patientRepository.findById(noteCommand.getPatientId());
-        if(patientById.isPresent()){
-            newEntity.setPatient(patientById.get());
-            return noteRepository.save(newEntity);
-        }else{
-            return new NullNoteEntity();
+    public NoteEntity getNoteById(Long id){
+        try{
+            Optional<NoteEntity> noteFounded = noteRepository.findById(id);
+
+            if (noteFounded.isPresent()) {
+                return noteFounded.get();
+            } else {
+                return new NullNoteEntity();
+            }
+        }catch(Exception e){
+            throw new Error(e);
+        }
+    }
+
+    public NoteEntity saveNote(NoteEntity noteData){
+
+        try {
+            return noteRepository.save(noteData);
+        }catch (Exception e){
+            throw new Error(e);
         }
     }
 
@@ -55,6 +66,7 @@ public class NoteService {
             NoteEntity note = foundNote.get();
             note.setDescription(noteData.getDescription());
             note.setDateOfEmition(noteData.getDateOfEmition());
+            note.setPatient(noteData.getPatient());
             return noteRepository.save(note);
         } else {
             return new NullNoteEntity();
@@ -64,7 +76,6 @@ public class NoteService {
 
     public void deleteById(long id){
         try {
-            //patientRepository.deleteById(id);
             noteRepository.deleteById(id);
         } catch (Exception e) {
             throw new Error(e);

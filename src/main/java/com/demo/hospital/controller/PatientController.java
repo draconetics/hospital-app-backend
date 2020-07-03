@@ -1,7 +1,10 @@
 package com.demo.hospital.controller;
 
+import com.demo.hospital.dao.DoctorCommand;
+import com.demo.hospital.dao.PatientCommand;
 import com.demo.hospital.model.PatientEntity;
 import com.demo.hospital.model.nullObject.NullPatientEntity;
+import com.demo.hospital.service.DoctorService;
 import com.demo.hospital.service.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -9,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -18,38 +23,47 @@ public class PatientController {
     @Autowired
     PatientService patientService;
 
-    @GetMapping("/patients")
-    public ResponseEntity<List<PatientEntity>> getAllPatients() {
-        List<PatientEntity> list = patientService.getAllPatients();
+    @Autowired
+    DoctorService doctorService;
 
-        return new ResponseEntity<List<PatientEntity>>(list, new HttpHeaders(), HttpStatus.OK);
+    @GetMapping("/patients")
+    public ResponseEntity<List<PatientCommand>> getAllPatients() {
+        List<PatientCommand> patientList = new ArrayList<>();
+        patientService.getAllPatients().forEach(pat -> {
+            patientList.add(new PatientCommand(pat));
+        });
+
+        return new ResponseEntity<List<PatientCommand>>(patientList, new HttpHeaders(), HttpStatus.OK);
     }
 
     @GetMapping("/patients/{id}")
-    public ResponseEntity<PatientEntity> getPatientById(@PathVariable("id") long id) {
+    public ResponseEntity<PatientCommand> getPatientById(@PathVariable("id") long id) {
         PatientEntity foundPatient = patientService.getPatientById(id);
         if(foundPatient instanceof NullPatientEntity)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         else
-            return new ResponseEntity<PatientEntity>(foundPatient, new HttpHeaders(), HttpStatus.OK);
+            return new ResponseEntity<PatientCommand>(new PatientCommand(foundPatient), new HttpHeaders(), HttpStatus.OK);
     }
 
     @PostMapping("/patients")
-    public ResponseEntity<PatientEntity> createPatient(@RequestBody PatientEntity patient){
-        System.out.println("this is a post-" + patient.getId());
-        PatientEntity updated = patientService.savePatient(patient);
-        return new ResponseEntity<PatientEntity>(updated, new HttpHeaders(), HttpStatus.OK);
+    public ResponseEntity<PatientCommand> createPatient(@RequestBody PatientCommand patientData) throws ParseException {
+        System.out.println("create patient");
+        PatientEntity created = patientData.convertToPatientEntity();
+        created.setDoctor(doctorService.getDoctorById(patientData.getDoctor()));
+        patientService.savePatient(created);
+        return new ResponseEntity<PatientCommand>(new PatientCommand(created), new HttpHeaders(), HttpStatus.OK);
     }
 
     @PutMapping("/patients/{id}")
-    public ResponseEntity<PatientEntity> updatePatient(@PathVariable("id") long id,
-                                                       @RequestBody PatientEntity patientData){
-        //System.out.println("this is a post-" + patient.getId());
-        PatientEntity updated = patientService.updatePatient(id,patientData);
+    public ResponseEntity<PatientCommand> updatePatient(@PathVariable("id") long id,
+                                                       @RequestBody PatientCommand patientData) throws ParseException {
+        PatientEntity updated = patientData.convertToPatientEntity();
+        updated.setDoctor(doctorService.getDoctorById(patientData.getDoctor()));
+        updated = patientService.updatePatient(id,updated);
         if(updated instanceof NullPatientEntity)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         else
-            return new ResponseEntity<PatientEntity>(updated, new HttpHeaders(), HttpStatus.OK);
+            return new ResponseEntity<PatientCommand>(new PatientCommand(updated), new HttpHeaders(), HttpStatus.OK);
     }
 
     @DeleteMapping("/patients/{id}")

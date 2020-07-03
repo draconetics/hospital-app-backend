@@ -31,21 +31,13 @@ public class PatientService {
     }
 
 
-    public PatientEntity savePatient(PatientEntity entity)
+    public PatientEntity savePatient(PatientEntity patient)
     {
-        //PatientEntity newEntity = patient.get();
-        PatientEntity newEntity = new PatientEntity();
-        newEntity.setName(entity.getName());
-        newEntity.setLastName(entity.getLastName());
-        newEntity.setDirection(entity.getDirection());
-
-        //Date date1=new SimpleDateFormat("yyyy-MM-dd").parse(entity.getBornDate());
-        //newEntity.setBornDate(new Date(120,11,20, 8,20,12));
-        newEntity.setBornDate(entity.getBornDate());
-/*        System.out.println("post------");
-        System.out.println(entity.getId());*/
-
-        return patientRepository.save(newEntity);
+        try {
+            return patientRepository.save(patient);
+        }catch (Exception e){
+            throw new Error(e);
+        }
     }
 
     public PatientEntity updatePatient(long id, PatientEntity patientData)
@@ -56,7 +48,7 @@ public class PatientService {
             PatientEntity patient = patientFounded.get();
             patient.setName(patientData.getName());
             patient.setLastName(patientData.getLastName());
-            patient.setDirection(patientData.getDirection());
+            patient.setAddress(patientData.getAddress());
             patient.setBornDate(patientData.getBornDate());
 
             return patientRepository.save(patient);

@@ -3,6 +3,7 @@ package com.demo.hospital.controller;
 
 import com.demo.hospital.dao.DoctorCommand;
 
+import com.demo.hospital.dao.ReplaceCommand;
 import com.demo.hospital.model.DoctorEntity;
 import com.demo.hospital.model.HospitalEntity;
 import com.demo.hospital.model.nullObject.NullDoctorEntity;
@@ -77,6 +78,17 @@ public class DoctorController {
 
             doctorService.deleteDoctorById(id);
             return new ResponseEntity<>("msg: deleted " + id, new HttpHeaders(), HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    @PostMapping("/doctors/replace")
+    public ResponseEntity<String> replaceDoctor(@RequestBody ReplaceCommand replaceId) {
+        try {
+            System.out.println("delte this id " + replaceId.getIdOld() + " to " + replaceId.getIdNew());
+            doctorService.replaceDoctor(replaceId.getIdOld(),replaceId.getIdNew());
+            return new ResponseEntity<>("msg: deleted " + replaceId.getIdOld(), new HttpHeaders(), HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }

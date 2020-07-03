@@ -14,14 +14,11 @@ public class NoteEntity extends ModelBase{
 
 
     private String description;
-    @JsonFormat(pattern="yyyy-MM-dd")
     private Date dateOfEmition;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonIgnore
+    @ManyToOne
     private PatientEntity patient;
+
+    public NoteEntity(){}
 
     public String getDescription() {
         return description;

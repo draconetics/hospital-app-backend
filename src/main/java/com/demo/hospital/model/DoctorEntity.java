@@ -19,8 +19,11 @@ public class DoctorEntity extends ModelBase {
     @ManyToOne
     private HospitalEntity hospital;
 
-    @OneToMany(mappedBy = "doctor", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.REMOVE)
     private List<SpecialityEntity> specialityEntities;
+
+    @OneToMany(mappedBy = "doctor", fetch = FetchType.EAGER)
+    private List<PatientEntity> patients = new ArrayList<>();
 
     public DoctorEntity(){}
 
@@ -70,5 +73,13 @@ public class DoctorEntity extends ModelBase {
 
     public void setSpecialityEntities(List<SpecialityEntity> specialityEntities) {
         this.specialityEntities = specialityEntities;
+    }
+
+    public List<PatientEntity> getPatients() {
+        return patients;
+    }
+
+    public void setPatients(List<PatientEntity> patients) {
+        this.patients = patients;
     }
 }

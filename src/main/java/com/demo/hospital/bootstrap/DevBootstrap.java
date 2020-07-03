@@ -1,13 +1,7 @@
 package com.demo.hospital.bootstrap;
 
-import com.demo.hospital.model.DoctorEntity;
-import com.demo.hospital.model.HospitalEntity;
-import com.demo.hospital.model.PatientEntity;
-import com.demo.hospital.model.SpecialityEntity;
-import com.demo.hospital.repository.DoctorRepository;
-import com.demo.hospital.repository.HospitalRepository;
-import com.demo.hospital.repository.PatientRepository;
-import com.demo.hospital.repository.SpecialityRepository;
+import com.demo.hospital.model.*;
+import com.demo.hospital.repository.*;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
@@ -24,16 +18,19 @@ public class DevBootstrap implements ApplicationListener<ContextRefreshedEvent> 
     private HospitalRepository hospitalRepository;
     private DoctorRepository doctorRepository;
     private SpecialityRepository specialityRepository;
+    private NoteRepository noteRepository;
 
     DevBootstrap(PatientRepository patientRepository,
                  HospitalRepository hospitalRepository,
                  DoctorRepository doctorRepository,
-                 SpecialityRepository specialityRepository){
+                 SpecialityRepository specialityRepository,
+                 NoteRepository noteRepository){
 
         this.patientRepository = patientRepository;
         this.hospitalRepository = hospitalRepository;
         this.doctorRepository = doctorRepository;
         this.specialityRepository = specialityRepository;
+        this.noteRepository = noteRepository;
     }
 
     @Override
@@ -116,11 +113,47 @@ public class DevBootstrap implements ApplicationListener<ContextRefreshedEvent> 
         /*PATIENTS*/
 
         PatientEntity patient01 = new PatientEntity();
-        patient01.setName("pedro");
-        patient01.setLastName("Poveda");
-        patient01.setDirection("temporal");
+        patient01.setName("Juan carlos");
+        patient01.setLastName("villagran");
+        patient01.setAddress("temporal");
         patient01.setBornDate(new GregorianCalendar(1993, 2, 21).getTime());
+        patient01.setDoctor(doctor01);
         patientRepository.save(patient01);
+
+        PatientEntity patient02 = new PatientEntity();
+        patient02.setName("Mariana");
+        patient02.setLastName("dupleich");
+        patient02.setAddress("Av. Panamericana");
+        patient02.setBornDate(new GregorianCalendar(1985, 1, 22).getTime());
+        patient02.setDoctor(doctor01);
+        patientRepository.save(patient02);
+
+        PatientEntity patient03 = new PatientEntity();
+        patient03.setName("Matilda");
+        patient03.setLastName("Leon");
+        patient03.setAddress("Av 6 de Agosto");
+        patient03.setBornDate(new GregorianCalendar(1980, 8, 28).getTime());
+        patient03.setDoctor(doctor02);
+        patientRepository.save(patient03);
+
+        /* NOTES */
+        NoteEntity note01 = new NoteEntity();
+        note01.setDescription("this is a description for patient 01");
+        note01.setDateOfEmition(new GregorianCalendar(2015, 8, 28).getTime());
+        note01.setPatient(patient01);
+        noteRepository.save(note01);
+
+        NoteEntity note02 = new NoteEntity();
+        note02.setDescription("this is a description for patient 02");
+        note02.setDateOfEmition(new GregorianCalendar(2019, 9, 29).getTime());
+        note02.setPatient(patient01);
+        noteRepository.save(note02);
+
+        NoteEntity note03 = new NoteEntity();
+        note03.setDescription("this is a description for patient 03");
+        note03.setDateOfEmition(new GregorianCalendar(2020, 12, 22).getTime());
+        note03.setPatient(patient02);
+        noteRepository.save(note03);
     }
 
 }
